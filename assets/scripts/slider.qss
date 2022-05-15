@@ -1,0 +1,12 @@
+
+
+QSlider::handle:vertical {
+    background: white;
+    border-radius: 4px;
+}
+
+QSlider {
+    background: rgb(109, 109, 109);
+    /* padding: 100px; */
+    border-radius: 4px;
+}
