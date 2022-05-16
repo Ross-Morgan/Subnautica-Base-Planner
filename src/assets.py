@@ -18,6 +18,11 @@ class Config:
     icon: QtGui.QIcon = attr.field(converter=QtGui.QIcon)
 
 
+class irange(range):
+    def __init__(self, start, stop, step=0):
+        super().__init__(start, stop + 1, step)
+
+
 class Assets:
     roboto = "../assets/roboto-regular.ttf"
 

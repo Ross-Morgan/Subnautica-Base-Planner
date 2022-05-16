@@ -5,7 +5,7 @@ from PyQt6 import QtCore, QtGui, QtSvgWidgets, QtWidgets
 
 from assets import Assets, Config, load_config
 from subnautica import (Item, Material, base_pieces, interior_modules,
-                        interior_pieces, power_sources)
+                        interior_pieces, power_sources, depths)
 
 
 class MainWindow(QtWidgets.QMainWindow):
