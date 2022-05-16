@@ -374,7 +374,7 @@ interior_pieces = {
 }
 
 
-interior_mods = {
+interior_modules = {
     "Fabricator": Buildings.Interior.Modules.fabricator,
     "Radio": Buildings.Interior.Modules.radio,
     "Medkit Fabricator": Buildings.Interior.Modules.med_kit_fabricator,

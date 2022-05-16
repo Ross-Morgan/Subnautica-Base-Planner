@@ -4,7 +4,7 @@ from functools import partial
 from PyQt6 import QtCore, QtGui, QtSvgWidgets, QtWidgets
 
 from assets import Assets, Config, load_config
-from subnautica import (Item, Material, base_pieces, interior_mods,
+from subnautica import (Item, Material, base_pieces, interior_modules,
                         interior_pieces, power_sources)
 
 
@@ -33,6 +33,27 @@ class MainWindow(QtWidgets.QMainWindow):
             box.setMinimum(0)
             box.setFont(QtGui.QFont("Roboto", 20))
             box.setStyleSheet(Assets.Scripts.spinbox)
+
+        def material_section(name: str, source: list[str]) -> QtWidgets.QFrame:
+            frame = QtWidgets.QFrame()
+
+            group = QtWidgets.QGroupBox("Base Pieces", frame)
+            group.setFocusPolicy(QtCore.Qt.FocusPolicy.ClickFocus)
+
+            form = QtWidgets.QFormLayout()
+
+            for data in source:
+                box = spinbox()
+                box.valueChanged.connect(partial(self.change_item_count,
+                                                    source[data]))
+
+                self.material_mappings[box] = source[data]
+
+                form.addRow(data, box)
+
+            group.setLayout(form)
+
+            return frame
 
         class ui:  # noqa NOSONAR
             background = QtSvgWidgets.QSvgWidget(
@@ -67,83 +88,15 @@ class MainWindow(QtWidgets.QMainWindow):
 
             materials = QtWidgets.QHBoxLayout()
 
-            class base_pieces:  # noqa NOSONAR
-                buildings = QtWidgets.QFrame()
 
-                group = QtWidgets.QGroupBox("Base Pieces", buildings)
-                group.setFocusPolicy(QtCore.Qt.FocusPolicy.ClickFocus)
+            self.base_pieces = material_section("base_pieces", source=base_pieces)
+            self.power_pieces = material_section("power_pieces", source=power_pieces)
+            self.interior_pieces = material_section("Interior Pieces", source=interior_pieces)
+            self.interior_modules = material_section("Interior Modules", source=interior_modules)
 
-                form = QtWidgets.QFormLayout()
-
-                for room in base_pieces:
-                    box = spinbox()
-                    box.valueChanged.connect(partial(self.change_item_count,
-                                                     base_pieces[room]))
-
-                    self.material_mappings[box] = base_pieces[room]
-
-                    form.addRow(room, box)
-
-                group.setLayout(form)
-
-            class power_pieces:  # noqa NOSONAR
-                power = QtWidgets.QFrame()
-
-                group = QtWidgets.QGroupBox("Power Sources", power)
-                group.setFocusPolicy(QtCore.Qt.FocusPolicy.ClickFocus)
-
-                form = QtWidgets.QFormLayout()
-
-                for source in power_sources:
-                    box = spinbox()
-                    box.valueChanged.connect(partial(self.change_item_count,
-                                                     power_sources[source]))
-
-                    self.material_mappings[box] = power_sources[source]
-
-                    form.addRow(source, box)
-
-                group.setLayout(form)
-
-            class interior_pieces:
-                interior = QtWidgets.QFrame()
-
-                group = QtWidgets.QGroupBox("Interior Pieces", interior)
-                group.setFocusPolicy(QtCore.Qt.FocusPolicy.ClickFocus)
-
-                form = QtWidgets.QFormLayout()
-
-                for piece in interior_pieces:
-                    box = spinbox()
-                    box.valueChanged.connect(partial(self.change_item_count,
-                                                     interior_pieces[piece]))
-
-                    self.material_mappings[box] = interior_pieces[piece]
-
-                    form.addRow(piece, box)
-
-                group.setLayout(form)
-
-            class interior_modules:
-                modules = QtWidgets.QFrame()
-
-                group = QtWidgets.QGroupBox("Interior Modules", modules)
-                group.setFocusPolicy(QtCore.Qt.FocusPolicy.ClickFocus)
-
-                form = QtWidgets.QFormLayout()
-
-                for module in interior_mods:
-                    box = spinbox()
-                    box.valueChanged.connect(partial(self.change_item_count,
-                                                     interior_mods[module]))
-
-            self.base_pieces = base_pieces()
-            self.power_pieces = power_pieces()
-            self.interior_pieces = interior_pieces()
-
-            materials.addWidget(self.base_pieces.buildings)
-            materials.addWidget(self.power_pieces.power)
-            materials.addWidget(self.interior_pieces.interior)
+            materials.addWidget(self.base_pieces)
+            materials.addWidget(self.power_pieces)
+            materials.addWidget(self.interior_pieces)
 
             material_frame.setLayout(materials)
 
