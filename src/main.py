@@ -4,8 +4,8 @@ from functools import partial
 from PyQt6 import QtCore, QtGui, QtSvgWidgets, QtWidgets
 
 from assets import Assets, Config, load_config
-from subnautica import (Item, Material, base_pieces, interior_modules,
-                        interior_pieces, power_sources, depths)
+from subnautica import (Item, Material, base_pieces, depths, interior_modules,
+                        interior_pieces, power_sources)
 
 
 class MainWindow(QtWidgets.QMainWindow):
@@ -21,7 +21,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
         self.loaded_image = 0
         self.material_mappings: dict[QtWidgets.QWidget, Material] = {}
-        self.current_materials: dict[Material, int] = {}
+        self.selected_materials: dict[Material, int] = {}
 
         self.setup_ui()
         self.connect_ui()
@@ -34,10 +34,12 @@ class MainWindow(QtWidgets.QMainWindow):
             box.setFont(QtGui.QFont("Roboto", 20))
             box.setStyleSheet(Assets.Scripts.spinbox)
 
+            return box
+
         def material_section(name: str, source: list[str]) -> QtWidgets.QFrame:
             frame = QtWidgets.QFrame()
 
-            group = QtWidgets.QGroupBox("Base Pieces", frame)
+            group = QtWidgets.QGroupBox(name, frame)
             group.setFocusPolicy(QtCore.Qt.FocusPolicy.ClickFocus)
 
             form = QtWidgets.QFormLayout()
@@ -45,7 +47,7 @@ class MainWindow(QtWidgets.QMainWindow):
             for data in source:
                 box = spinbox()
                 box.valueChanged.connect(partial(self.change_item_count,
-                                                    source[data]))
+                                                 source[data]))
 
                 self.material_mappings[box] = source[data]
 
@@ -88,11 +90,14 @@ class MainWindow(QtWidgets.QMainWindow):
 
             materials = QtWidgets.QHBoxLayout()
 
-
-            self.base_pieces = material_section("base_pieces", source=base_pieces)
-            self.power_pieces = material_section("power_pieces", source=power_pieces)
-            self.interior_pieces = material_section("Interior Pieces", source=interior_pieces)
-            self.interior_modules = material_section("Interior Modules", source=interior_modules)
+            self.base_pieces = material_section("base_pieces",
+                                                source=base_pieces)
+            self.power_pieces = material_section("power_pieces",
+                                                 source=power_sources)
+            self.interior_pieces = material_section("Interior Pieces",
+                                                    source=interior_pieces)
+            self.interior_modules = material_section("Interior Modules",
+                                                     source=interior_modules)
 
             materials.addWidget(self.base_pieces)
             materials.addWidget(self.power_pieces)
@@ -119,28 +124,14 @@ class MainWindow(QtWidgets.QMainWindow):
         self.ui.depth_meter.setFont(font)
 
     def change_background(self, depth: int):
-        depth = -depth
-
-        if depth <= 0:
-            img = 0  # sky
-        elif 0 < depth < 300:
-            img = 1  # light sand
-        elif 300 <= depth <= 550:
-            img = 2  # dark sand
-        elif 550 < depth < 950:
-            img = 3  # green
-        elif 950 <= depth <= 1650:
-            img = 4
-        else:
-            img = 5
-
+        img = depths[list(filter(lambda d: depth in d, list(depths)))[0]]
         self.ui.background.load(Assets.Images.backgrounds[img])
 
     def change_depth(self, depth: int):
         self.ui.depth_meter.setText(f"{-depth}m")
 
     def change_item_count(self, item: Item, count: int):
-        print(item, count, sep=" | ")
+        self.selected_materials[item] = count
 
 
 @load_config("../config/config.yaml")

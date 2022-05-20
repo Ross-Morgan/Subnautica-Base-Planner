@@ -2,7 +2,6 @@ from collections import Counter
 from enum import Enum, auto
 from typing import Iterable, TypeVar, Type, Union
 
-from assets import irange
 
 class MaterialType(Enum):
     base_piece = auto()
@@ -401,12 +400,13 @@ power_sources = {
 
 
 depths = {
-    range(-1,  1): 0,
-    range(0, 300): 1,
+    range(0,  1): 0,
+    range(1, 300): 1,
     range(300, 550): 2,
-    range(): 3,
+    range(550, 950): 3,
     range(950, 1650): 4,
-    range(1650, 2000): 
+    range(1650, 2000): 5
 }
+
 
 # flake8: noqa
