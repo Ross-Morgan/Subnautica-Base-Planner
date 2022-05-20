@@ -1,3 +1,4 @@
+import os
 import sys
 from functools import partial
 
@@ -134,8 +135,12 @@ class MainWindow(QtWidgets.QMainWindow):
         self.selected_materials[item] = count
 
 
+def cd_src() -> None:
+    os.chdir(os.path.join(os.path.abspath(__file__), ".."))
+
+
 @load_config("../config/config.yaml")
-def main(config: dict[str, str | QtCore.QSize | QtGui.QIcon]):
+def main(config: dict[str, str | QtCore.QSize | QtGui.QIcon]) -> None:
     app = QtWidgets.QApplication(sys.argv)
 
     window_config = Config(
@@ -151,4 +156,5 @@ def main(config: dict[str, str | QtCore.QSize | QtGui.QIcon]):
 
 
 if __name__ == "__main__":
+    cd_src()
     main()
