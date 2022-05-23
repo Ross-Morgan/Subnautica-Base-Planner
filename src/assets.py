@@ -109,6 +109,7 @@ def modify_vars(cls: T, func: Callable, *types: type, f_args: tuple = None, f_kw
             setattr(cls, member, func(attr, *f_args, **f_kwargs))
 
 
-# Replace filepaths with script contents
-modify_vars(Assets.Scripts, load_script, str)
-modify_vars(Assets.Scripts, load_scripts, list, dict)
+def load_assets():
+    # Replace filepaths with script contents
+    modify_vars(Assets.Scripts, load_script, str)
+    modify_vars(Assets.Scripts, load_scripts, list, dict)

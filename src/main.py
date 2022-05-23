@@ -4,7 +4,7 @@ from functools import partial
 
 from PyQt6 import QtCore, QtGui, QtSvgWidgets, QtWidgets
 
-from assets import Assets, Config, load_config
+from assets import Assets, Config, load_assets, load_config
 from subnautica import (Item, Material, base_pieces, depths, interior_modules,
                         interior_pieces, power_sources)
 
@@ -134,9 +134,9 @@ class MainWindow(QtWidgets.QMainWindow):
     def change_item_count(self, item: Item, count: int):
         self.selected_materials[item] = count
 
-
-def cd_src() -> None:
-    os.chdir(os.path.join(os.path.abspath(__file__), ".."))
+print(os.getcwd())
+os.chdir(os.path.join(os.path.abspath(__file__), ".."))
+print(os.getcwd())
 
 
 @load_config("../config/config.yaml")
@@ -156,5 +156,4 @@ def main(config: dict[str, str | QtCore.QSize | QtGui.QIcon]) -> None:
 
 
 if __name__ == "__main__":
-    cd_src()
     main()
