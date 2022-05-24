@@ -402,8 +402,8 @@ power_sources = {
 depths = {
     range(0,  1): 0,
     range(1, 300): 1,
-    range(300, 550): 2,
-    range(550, 950): 3,
+    range(300, 650): 2,
+    range(650, 950): 3,
     range(950, 1650): 4,
     range(1650, 2001): 5
 }
