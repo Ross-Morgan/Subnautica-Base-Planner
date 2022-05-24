@@ -1,3 +1,4 @@
+import os
 from typing import Callable, TypeVar
 
 import attr
@@ -24,8 +25,8 @@ class Assets:
     class Images:
         backgrounds = [
             "../assets/images/biomes/sky.svg",
-            "../assets/images/biomes/light-sand.svg",
-            "../assets/images/biomes/dark-sand.svg",
+            "../assets/images/biomes/shallow.svg",
+            "../assets/images/biomes/deep.svg",
             "../assets/images/biomes/river.svg",
             "../assets/images/biomes/lava.svg",
             "../assets/images/biomes/void.svg",
@@ -36,6 +37,23 @@ class Assets:
         slider = "slider.qss"
         depth = "depth.qss"
         spinbox = "spinbox.qss"
+
+
+def check_wd(func: Callable):
+    """
+    Ensures cwd of file is in `src` folder
+    """
+
+    _change_wd = False
+
+    os.chdir(".")
+
+    print("changing cwd")
+
+    def inner(*args, **kwargs):
+        func(*args, **kwargs, change_wd=_change_wd)
+
+    return inner
 
 
 def load_config(file_path: str):
@@ -67,26 +85,6 @@ def load_config(file_path: str):
     return outer
 
 
-def load_script(path: str):
-    return open(f"../assets/scripts/{path}", "r", encoding="utf-8").read()
-
-
-def load_scripts(iterable: dict[str, str] | list[str]) -> list[T] | dict[T]:
-    if isinstance(iterable, dict):
-        modified_members = {}
-
-        for member in iterable:
-            modified_members[member] = load_script(modified_members[member])
-
-    else:
-        modified_members = []
-
-        for member in iterable:
-            modified_members.append(load_script(member))
-
-    return modified_members
-
-
 def modify_vars(cls: T, func: Callable, *types: type, f_args: tuple = None, f_kwargs: dict = None):  # noqa
     """
     Calls passed function on all user-defined members of a class
@@ -107,6 +105,29 @@ def modify_vars(cls: T, func: Callable, *types: type, f_args: tuple = None, f_kw
         attr = getattr(cls, member)
         if isinstance(attr, types):
             setattr(cls, member, func(attr, *f_args, **f_kwargs))
+
+
+######
+
+
+def load_script(path: str):
+    return open(f"../assets/scripts/{path}", "r", encoding="utf-8").read()
+
+
+def load_scripts(iterable: dict[str, str] | list[str]) -> list[T] | dict[T]:
+    if isinstance(iterable, dict):
+        modified_members = {}
+
+        for member in iterable:
+            modified_members[member] = load_script(modified_members[member])
+
+    else:
+        modified_members = []
+
+        for member in iterable:
+            modified_members.append(load_script(member))
+
+    return modified_members
 
 
 def load_assets():

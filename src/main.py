@@ -1,10 +1,9 @@
-import os
 import sys
 from functools import partial
 
 from PyQt6 import QtCore, QtGui, QtSvgWidgets, QtWidgets
 
-from assets import Assets, Config, load_assets, load_config
+from assets import Assets, Config, check_wd, load_assets, load_config
 from subnautica import (Item, Material, base_pieces, depths, interior_modules,
                         interior_pieces, power_sources)
 
@@ -91,18 +90,14 @@ class MainWindow(QtWidgets.QMainWindow):
 
             materials = QtWidgets.QHBoxLayout()
 
-            self.base_pieces = material_section("base_pieces",
-                                                source=base_pieces)
-            self.power_pieces = material_section("power_pieces",
-                                                 source=power_sources)
-            self.interior_pieces = material_section("Interior Pieces",
-                                                    source=interior_pieces)
-            self.interior_modules = material_section("Interior Modules",
-                                                     source=interior_modules)
-
-            materials.addWidget(self.base_pieces)
-            materials.addWidget(self.power_pieces)
-            materials.addWidget(self.interior_pieces)
+            materials.addWidget(material_section("base_pieces",
+                                                 source=base_pieces))
+            materials.addWidget(material_section("power_pieces",
+                                                 source=power_sources))
+            materials.addWidget(material_section("Interior Pieces",
+                                                 source=interior_pieces))
+            materials.addWidget(material_section("Interior Modules",
+                                                 source=interior_modules))
 
             material_frame.setLayout(materials)
 
@@ -125,6 +120,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.ui.depth_meter.setFont(font)
 
     def change_background(self, depth: int):
+        depth *= -1
         img = depths[list(filter(lambda d: depth in d, list(depths)))[0]]
         self.ui.background.load(Assets.Images.backgrounds[img])
 
@@ -134,13 +130,12 @@ class MainWindow(QtWidgets.QMainWindow):
     def change_item_count(self, item: Item, count: int):
         self.selected_materials[item] = count
 
-print(os.getcwd())
-os.chdir(os.path.join(os.path.abspath(__file__), ".."))
-print(os.getcwd())
 
-
+@check_wd
 @load_config("../config/config.yaml")
 def main(config: dict[str, str | QtCore.QSize | QtGui.QIcon]) -> None:
+    load_assets()
+
     app = QtWidgets.QApplication(sys.argv)
 
     window_config = Config(
