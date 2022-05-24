@@ -39,23 +39,6 @@ class Assets:
         spinbox = "spinbox.qss"
 
 
-def check_wd(func: Callable):
-    """
-    Ensures cwd of file is in `src` folder
-    """
-
-    _change_wd = False
-
-    os.chdir(".")
-
-    print("changing cwd")
-
-    def inner(*args, **kwargs):
-        func(*args, **kwargs, change_wd=_change_wd)
-
-    return inner
-
-
 def load_config(file_path: str):
     """
     Loads configuration as a `dict` from a `.yaml` file
@@ -79,8 +62,8 @@ def load_config(file_path: str):
 
     def outer(func: Callable[[dict], None]):
 
-        def inner():
-            return func(config_data)
+        def inner(*args, **kwargs):
+            return func(config_data, *args, **kwargs)
         return inner
     return outer
 
@@ -134,3 +117,6 @@ def load_assets():
     # Replace filepaths with script contents
     modify_vars(Assets.Scripts, load_script, str)
     modify_vars(Assets.Scripts, load_scripts, list, dict)
+
+
+os.chdir(os.path.normpath(f"{__file__}/../"))

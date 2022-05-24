@@ -1,11 +1,15 @@
+import os
 import sys
 from functools import partial
 
 from PyQt6 import QtCore, QtGui, QtSvgWidgets, QtWidgets
 
-from assets import Assets, Config, check_wd, load_assets, load_config
+from assets import Assets, Config, load_assets, load_config
 from subnautica import (Item, Material, base_pieces, depths, interior_modules,
                         interior_pieces, power_sources)
+
+
+os.chdir(os.path.normpath(f"{__file__}/../"))
 
 
 class MainWindow(QtWidgets.QMainWindow):
@@ -131,9 +135,8 @@ class MainWindow(QtWidgets.QMainWindow):
         self.selected_materials[item] = count
 
 
-@check_wd
 @load_config("../config/config.yaml")
-def main(config: dict[str, str | QtCore.QSize | QtGui.QIcon]) -> None:
+def main(config: dict[str, str | QtCore.QSize | QtGui.QIcon], **kwgs) -> None:
     load_assets()
 
     app = QtWidgets.QApplication(sys.argv)
