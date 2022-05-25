@@ -27,6 +27,8 @@ class MainWindow(QtWidgets.QMainWindow):
         self.material_mappings: dict[QtWidgets.QWidget, Material] = {}
         self.selected_materials: dict[Material, int] = {}
 
+        self._prev_image = -1
+
         self.setup_ui()
         self.connect_ui()
         self.apply_styles()
@@ -35,7 +37,7 @@ class MainWindow(QtWidgets.QMainWindow):
         def spinbox() -> QtWidgets.QSpinBox:
             box = QtWidgets.QSpinBox()
             box.setMinimum(0)
-            box.setFont(QtGui.QFont("Roboto", 20))
+            box.setFont(QtGui.QFont("Roboto", 18))
             box.setStyleSheet(Assets.Scripts.spinbox)
 
             return box
@@ -65,7 +67,7 @@ class MainWindow(QtWidgets.QMainWindow):
             background = QtSvgWidgets.QSvgWidget(
                 Assets.Images.backgrounds[self.loaded_image], self
             )
-            background.setFocusPolicy(QtCore.Qt.FocusPolicy.ClickFocus)
+            background.setFocusPolicy(QtCore.Qt.FocusPolicy.StrongFocus)
             self.setCentralWidget(background)
 
             depth_slider = QtWidgets.QSlider(QtCore.Qt.Orientation.Vertical,
@@ -89,19 +91,44 @@ class MainWindow(QtWidgets.QMainWindow):
 
             #####
 
+            blur = QtWidgets.QGraphicsBlurEffect()
+            blur.setBlurRadius(15)
+
+            opacity = QtWidgets.QGraphicsOpacityEffect()
+            opacity.setOpacity(0.5)
+
+            background_cover = QtWidgets.QLabel(self)
+            background_cover.setStyleSheet("background-color: grey")
+            # background_cover.setGraphicsEffect(blur)
+            background_cover.setGraphicsEffect(opacity)
+            background_cover.setGeometry(25, 25, 850, 850)
+
             material_frame = QtWidgets.QFrame(self)
-            material_frame.setGeometry(10, 10, 1200, 800)
+            material_frame.setGeometry(50, 50, 800, 800)
 
             materials = QtWidgets.QHBoxLayout()
 
-            materials.addWidget(material_section("base_pieces",
-                                                 source=base_pieces))
-            materials.addWidget(material_section("power_pieces",
-                                                 source=power_sources))
-            materials.addWidget(material_section("Interior Pieces",
-                                                 source=interior_pieces))
-            materials.addWidget(material_section("Interior Modules",
-                                                 source=interior_modules))
+            vbox_frame = QtWidgets.QFrame()
+            vbox = QtWidgets.QVBoxLayout(vbox_frame)
+
+            spacer = QtWidgets.QLabel()
+
+            widgets = []
+
+            vbox.addWidget(material_section("Power Pieces",
+                                            source=power_sources))
+            vbox.addWidget(material_section("Interior Pieces",
+                                            source=interior_pieces))
+            vbox.addWidget(spacer)
+
+            widgets.append(material_section("Base Pieces",
+                                            source=base_pieces))
+            widgets.append(vbox_frame)
+            widgets.append(material_section("Interior Modules",
+                                            source=interior_modules))
+
+            for widget in widgets:
+                materials.addWidget(widget)
 
             material_frame.setLayout(materials)
 
@@ -110,6 +137,7 @@ class MainWindow(QtWidgets.QMainWindow):
     def connect_ui(self):
         self.ui.depth_slider.valueChanged.connect(self.change_background)
         self.ui.depth_slider.valueChanged.connect(self.change_depth)
+        self.ui.depth_slider.valueChanged.connect(self.change_struct_integrity)
 
     def apply_styles(self):
         font = QtGui.QFont("Roboto", 48)
@@ -124,19 +152,29 @@ class MainWindow(QtWidgets.QMainWindow):
         self.ui.depth_meter.setFont(font)
 
     def change_background(self, depth: int):
-        depth *= -1
+        depth = abs(depth)
+
         img = depths[list(filter(lambda d: depth in d, list(depths)))[0]]
+
+        if self._prev_image == img:
+            return
+
+        self._prev_image = img
+
         self.ui.background.load(Assets.Images.backgrounds[img])
 
     def change_depth(self, depth: int):
         self.ui.depth_meter.setText(f"{-depth}m")
+
+    def change_struct_integrity(self, depth: int):
+        depth = abs(depth)
 
     def change_item_count(self, item: Item, count: int):
         self.selected_materials[item] = count
 
 
 @load_config("../config/config.yaml")
-def main(config: dict[str, str | QtCore.QSize | QtGui.QIcon], **kwgs) -> None:
+def main(config: dict[str, str | QtCore.QSize | QtGui.QIcon]) -> None:
     load_assets()
 
     app = QtWidgets.QApplication(sys.argv)
