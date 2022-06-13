@@ -15,8 +15,8 @@ def _qsize(s: list):
 @attr.define(frozen=True)
 class Config:
     size: QtCore.QSize = attr.field(converter=_qsize)
-    title: str
-    icon: QtGui.QIcon = attr.field(converter=QtGui.QIcon)
+    title: str = attr.field(converter=str, default="Program")
+    icon: QtGui.QIcon = attr.field(converter=QtGui.QIcon, default=None)
 
 
 class Assets:
@@ -61,7 +61,6 @@ def load_config(file_path: str):
     config_data: dict = yaml.safe_load(open(file_path, "r"))
 
     def outer(func: Callable[[dict], None]):
-
         def inner(*args, **kwargs):
             return func(config_data, *args, **kwargs)
         return inner
@@ -72,10 +71,11 @@ def modify_vars(cls: T, func: Callable, *types: type, f_args: tuple = None, f_kw
     """
     Calls passed function on all user-defined members of a class
 
-    - @param cls: T [ Class to modify ]
-    - @param func: Callable [ Function to call of members ]
-    - @param f_args: Any [ Positional arguments to pass to function ]
-    - @param f_kwargs: Any [ Keyword arguments to pass to function ]
+    Arguments:
+        @param cls: T [ Class to modify ]
+        @param func: Callable [ Function to call of members ]
+        @param f_args: Any [ Positional arguments to pass to function ]
+        @param f_kwargs: Any [ Keyword arguments to pass to function ]
     """
     f_args = f_args or ()
     f_kwargs = f_kwargs or {}
