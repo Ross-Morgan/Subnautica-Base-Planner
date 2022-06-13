@@ -77,12 +77,20 @@ class MainWindow(QtWidgets.QMainWindow):
             depth_slider.setMaximum(0)
 
             depth_meter_label = QtWidgets.QLabel("Depth:", self)
-            depth_meter_label.setGeometry(1540, 40, 220, 75)
+            depth_meter_label.setGeometry(1520, 40, 240, 80)
             depth_meter_label.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
 
             depth_meter = QtWidgets.QLabel("0m", self)
-            depth_meter.setGeometry(1540, 135, 220, 75)
+            depth_meter.setGeometry(1520, 140, 240, 80)
             depth_meter.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
+
+            struct_int_label = QtWidgets.QLabel("Integrity:", self)
+            struct_int_label.setGeometry(1480, 240, 280, 80)
+            struct_int_label.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
+
+            struct_int = QtWidgets.QLabel("0m", self)
+            struct_int.setGeometry(1520, 140, 240, 80)
+            struct_int.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
 
             #####
 
@@ -91,27 +99,16 @@ class MainWindow(QtWidgets.QMainWindow):
 
             #####
 
-            blur = QtWidgets.QGraphicsBlurEffect()
-            blur.setBlurRadius(15)
-
-            opacity = QtWidgets.QGraphicsOpacityEffect()
-            opacity.setOpacity(0.5)
-
-            background_cover = QtWidgets.QLabel(self)
-            background_cover.setStyleSheet("background-color: grey")
-            # background_cover.setGraphicsEffect(blur)
-            background_cover.setGraphicsEffect(opacity)
-            background_cover.setGeometry(25, 25, 850, 850)
-
             material_frame = QtWidgets.QFrame(self)
             material_frame.setGeometry(50, 50, 800, 800)
+            # material_frame.setStyleSheet()
 
             materials = QtWidgets.QHBoxLayout()
 
             vbox_frame = QtWidgets.QFrame()
             vbox = QtWidgets.QVBoxLayout(vbox_frame)
 
-            spacer = QtWidgets.QLabel()
+            spacer = QtWidgets.QLabel() 
 
             widgets = []
 
@@ -145,8 +142,12 @@ class MainWindow(QtWidgets.QMainWindow):
         self.setStyleSheet(Assets.Scripts.main_window)
 
         self.ui.depth_slider.setStyleSheet(Assets.Scripts.slider)
+
         self.ui.depth_meter_label.setStyleSheet(Assets.Scripts.depth)
         self.ui.depth_meter_label.setFont(font)
+
+        self.ui.struct_int_label.setFont(font)
+        self.ui.struct_int_label.setStyleSheet(Assets.Scripts.depth)
 
         self.ui.depth_meter.setStyleSheet(Assets.Scripts.depth)
         self.ui.depth_meter.setFont(font)
@@ -167,7 +168,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.ui.depth_meter.setText(f"{-depth}m")
 
     def change_struct_integrity(self, depth: int):
-        depth = abs(depth)
+        depth = -depth
 
     def change_item_count(self, item: Item, count: int):
         self.selected_materials[item] = count
