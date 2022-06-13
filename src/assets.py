@@ -46,16 +46,14 @@ def load_config(file_path: str):
     Apply decorator to a function whose first positional argument
     is a config of type `dict`
 
-    ## Example:
+    ### Example:
     ```
     @load_config("../config/config.yaml")
     def main(config: dict, ...):
         pass
     ```
-
     ---
-
-    - @param file_path: str [ Path to .yaml configuration file]
+    :param file_path: Path to .yaml configuration file
     """
 
     config_data: dict = yaml.safe_load(open(file_path, "r"))
@@ -71,11 +69,14 @@ def modify_vars(cls: T, func: Callable, *types: type, f_args: tuple = None, f_kw
     """
     Calls passed function on all user-defined members of a class
 
-    Arguments:
-        @param cls: T [ Class to modify ]
-        @param func: Callable [ Function to call of members ]
-        @param f_args: Any [ Positional arguments to pass to function ]
-        @param f_kwargs: Any [ Keyword arguments to pass to function ]
+    :param cls: T - Class to modify
+    :param func: Callable - Function to call of members
+    :param f_args: Any - Positional arguments to pass to function
+    :param f_kwargs: Any - Keyword arguments to pass to function
+
+    :returns: None
+
+    :raises TypeError: Too many / not enough arguments were passed to function
     """
     f_args = f_args or ()
     f_kwargs = f_kwargs or {}
